@@ -11,7 +11,7 @@ SERE <- function(observed){
   #calculate lambda and expected values
   laneTotals <- colSums(observed)
   total <- sum(laneTotals)
-  fullObserved <- observed[rowSums(observed)>0,]
+  fullObserved <- as.matrix(observed[rowSums(observed)>0,])
   fullLambda <- rowSums(fullObserved)/total
   fullLhat <- fullLambda > 0
   fullExpected<- outer(fullLambda, laneTotals)
