@@ -15,7 +15,10 @@ countsBoxplots <- function(object, group, col = c("lightblue","orange","MediumVi
     counts <- counts(object)
     counts <- removeNull(counts)
     norm.counts <- counts(object, normalized=TRUE)
-    norm.counts <- removeNull(norm.counts)  
+    norm.counts <- removeNull(norm.counts)
+
+    vst.counts <- vst(counts)
+    vst.counts <- removeNull(vst.counts)
   } else{
     counts <- object$counts
     counts <- removeNull(counts)
@@ -23,13 +26,16 @@ countsBoxplots <- function(object, group, col = c("lightblue","orange","MediumVi
     N <- colSums(object$counts)
     f <- tmm * N/mean(tmm * N)
     norm.counts <- scale(object$counts, center=FALSE, scale=f)
-    norm.counts <- removeNull(norm.counts)    
+    norm.counts <- removeNull(norm.counts)
+
+    vst.counts <- vst(counts)
+    vst.counts <- removeNull(vst.counts)
   }
 
   if (outfile) png(filename="figures/countsBoxplots.png", width=2*min(2200, 1800+800*ncol(norm.counts)/10), height=1800, res=300)
   d <- stack(as.data.frame(counts))
   d$group <- rep(group, each=nrow(counts))
-  p1 <- ggplot(d) + 
+  p1 <- ggplot(d) +
     geom_boxplot(aes(x=.data$ind, y=.data$values+1, fill=.data$group), show.legend=TRUE) +
     labs(fill="") +
     scale_fill_manual(values=col) +
@@ -41,23 +47,38 @@ countsBoxplots <- function(object, group, col = c("lightblue","orange","MediumVi
     scale_y_continuous(trans = log10_trans(),
                        breaks = trans_breaks("log10", function(x) 10^x),
                        labels = trans_format("log10", math_format(~10^.x)))
-  
+
   d <- stack(as.data.frame(norm.counts))
   d$group <- rep(group, each=nrow(norm.counts))
-  p2 <- ggplot(d) + 
+  p2 <- ggplot(d) +
     geom_boxplot(aes(x=.data$ind, y=.data$values+1, fill=.data$group), show.legend=TRUE) +
     labs(fill="") +
     scale_fill_manual(values=col) +
     xlab("Samples") +
     ylab("Normalized counts") +
-    ggtitle("Normalized counts distribution") +
+    ggtitle("Size factor Normalized counts distribution") +
     ggplot_theme +
     theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
     scale_y_continuous(trans = log10_trans(),
                        breaks = trans_breaks("log10", function(x) 10^x),
                        labels = trans_format("log10", math_format(~10^.x)))
-  
-  grid.arrange(p1, p2, nrow=1, ncol=2)
+
+   d <- stack(as.data.frame(vst.counts))
+   d$group <- rep(group, each=nrow(vst.counts))
+   p3 <- ggplot(d) +
+     geom_boxplot(aes(x=.data$ind, y=.data$values+1, fill=.data$group), show.legend=TRUE) +
+     labs(fill="") +
+     scale_fill_manual(values=col) +
+     xlab("Samples") +
+     ylab("Normalized counts") +
+     ggtitle("VST Normalized counts distribution") +
+     ggplot_theme +
+     theme(axis.text.x=element_text(angle=90, hjust=1, vjust=0.5)) +
+     scale_y_continuous(trans = log10_trans(),
+                        breaks = trans_breaks("log10", function(x) 10^x),
+                        labels = trans_format("log10", math_format(~10^.x)))
+
+  grid.arrange(p1, p2, p3, nrow=1, ncol=3)
   if (outfile) dev.off()
-    
+
 }
