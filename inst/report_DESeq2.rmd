@@ -49,7 +49,7 @@ nbNull <- nrow(counts) - nrow(removeNull(counts)) # needed in one of the next pa
 
 Figure 1 shows the total number of mapped and counted reads for each sample. We expect total read counts to be similar within conditions, they may be different across conditions. Total counts sometimes vary widely between replicates. This may happen for several reasons, including:
 
-- different rRNA contamination levels between samples (even between biological replicates);
+- different circRNA contamination levels between samples (even between biological replicates);
 - slight differences between library concentrations, since they may be difficult to measure with high precision.
 
 
@@ -190,7 +190,7 @@ Once the dispersion estimation and the model fitting have been done, DESeq2 can 
 
 ## Independent filtering
 
-DESeq2 can perform an independent filtering to increase the detection power of differentially expressed features at the same experiment-wide type I error. Since features with very low counts are not likely to see significant differences typically due to high dispersion, it defines a threshold on the mean of the normalized counts irrespective of the biological condition. This procedure is independent because the information about the variables in the design formula is not used [@Love2014]. 
+DESeq2 can perform an independent filtering to increase the detection power of differentially expressed features at the same experiment-wide type I error. Since features with very low counts are not likely to see significant differences typically due to high dispersion, it defines a threshold on the mean of the normalized counts irrespective of the biological condition. This procedure is independent because the information about the variables in the design formula is not used [@Love2014].
 
 ```{r , echo=FALSE, results="asis"}
 if (independentFiltering){
